@@ -10,4 +10,5 @@ import lombok.Setter;
 public class SignupReq {
 
     private String email;
+    private String fullName;
 }

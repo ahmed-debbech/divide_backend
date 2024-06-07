@@ -28,7 +28,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResp> firstTime(@RequestBody SignupReq req){
-        log.info("a new user is signing up with email {}", req.getEmail());
+        log.info("a new user is signing up with email {} with name {} ", req.getEmail(), req.getFullName());
         return ResponseEntity.ok().body(null);
     }
 
@@ -38,5 +38,5 @@ public class AuthController {
         return ResponseEntity.ok().body(null);
     }
 
-    
+
 }
