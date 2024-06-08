@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 public class ValidateLoginResp {
     private String token;
-    private String ok;
+    private boolean ok;
     private String error;
 }
