@@ -1,5 +1,7 @@
 package com.debbech.divide.services.impl;
 
+import com.debbech.divide.data.UserRepo;
+import com.debbech.divide.entity.User;
 import com.debbech.divide.security.JwtService;
 import com.debbech.divide.services.interfaces.IAuthService;
 import com.debbech.divide.utils.AllInputSanitizers;
@@ -16,6 +18,8 @@ public class AuthService implements IAuthService {
 
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private UserRepo userRepo;
 
     public static String getLoggedInUser(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -24,6 +28,7 @@ public class AuthService implements IAuthService {
 
     @Override
     public boolean startAuthentication(String uid, String email) throws Exception {
+
         //check if it is email or uid
         if(!uid.equals("") && !email.equals("")) throw new Exception("You should set either email or UID.");
         boolean isUidUsed = true;
@@ -34,19 +39,57 @@ public class AuthService implements IAuthService {
             String error = AllInputSanitizers.isUid(uid);
             if (!error.equals("")) throw new Exception(error);
         }
+
         //search for it in database
-        //if(isUidUsed) //search with uid for email in db
-        //if(!isUidUsed) //search with email for email in db
+        User userDb = null;
+        if(isUidUsed) userDb = userRepo.findUserByUid(uid).orElse(null);
+        if(!isUidUsed) userDb = userRepo.findUserByEmail(email).orElse(null);
 
         //grab associated email
+        if (userDb == null) throw new Exception("could not find user");
+        String emailfound = userDb.getEmail();
 
         //generate OTP
         String otp = OTP.generate();
         //store OTP in database to the user
+        userDb.setLastOtp(otp);
+        userDb.setOtpValidated(false);
+        userRepo.save(userDb);
 
-        //send email
+        //TODO send email
 
-        //return back
+        //finish return back
         return false;
+    }
+
+    @Override
+    public String finishAuthentication(String uid, String email, String code) throws Exception {
+        //check if it is email or uid
+        if(!uid.equals("") && !email.equals("")) throw new Exception("You should set either email or UID.");
+        boolean isUidUsed = true;
+        if(uid.equals("")) {
+            if (!AllInputSanitizers.isValidEmail(email)) throw new Exception("Incorrect email");
+            isUidUsed = false;
+        }else {
+            String error = AllInputSanitizers.isUid(uid);
+            if (!error.equals("")) throw new Exception(error);
+        }
+
+        //search for it in database
+        User userDb = null;
+        if(isUidUsed) userDb = userRepo.findUserByUid(uid).orElse(null);
+        if(!isUidUsed) userDb = userRepo.findUserByEmail(email).orElse(null);
+
+        if (userDb == null) throw new Exception("could not find user");
+        if (userDb.isOtpValidated()) throw new Exception("otp code is already validated");
+
+        String lastOtp = userDb.getLastOtp();
+        if(!lastOtp.equals(code)) throw new Exception("wrong otp");
+
+        String token = jwtService.createJwt(uid);
+        userDb.setOtpValidated(true);
+        userRepo.save(userDb);
+
+        return token;
     }
 }

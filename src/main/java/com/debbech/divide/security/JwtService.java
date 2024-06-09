@@ -19,12 +19,12 @@ public class JwtService {
     @Value("${spring.security.secret}")
     private String secret;
 
-    public String createJwt(String uuid, HttpServletRequest req){
+    public String createJwt(String uuid){
         Algorithm algo = Algorithm.HMAC256(secret);
         String accesstoken = JWT.create()
                 .withSubject(uuid)
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1800000))
-                .withIssuer(req.getRequestURI().toString())
+                .withIssuer("divide_backend")
                 .withClaim("roles", true)
                 .sign(algo);
         return accesstoken;

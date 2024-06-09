@@ -25,7 +25,7 @@ public class AuthController {
     public ResponseEntity<LoginResp> login(@RequestBody LoginReq req){
         log.info("{} ", req.getUid() + " is trying to login");
         try {
-            boolean b = authService.startAuthentication(req.getUid(), req.getEmail());
+            authService.startAuthentication(req.getUid(), req.getEmail());
             LoginResp lr = new LoginResp(true, "");
             return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
@@ -36,7 +36,14 @@ public class AuthController {
     @PostMapping("/login/valid")
     public ResponseEntity<ValidateLoginResp> validateLogin(@RequestBody ValidateLoginReq req, HttpServletRequest rawReq){
         log.info("{} is trying to validate login", req.getUid());
-        return ResponseEntity.ok().body(null);
+        try {
+            String token  = authService.finishAuthentication(req.getUid(), req.getEmail(), req.getCode());
+            ValidateLoginResp lr = new ValidateLoginResp(token, true, "");
+            return ResponseEntity.ok().body(lr);
+        } catch (Exception e) {
+            ValidateLoginResp lr = new ValidateLoginResp("", false, e.getMessage());
+            return ResponseEntity.ok().body(lr);
+        }
     }
 
     @PostMapping("/signup")
