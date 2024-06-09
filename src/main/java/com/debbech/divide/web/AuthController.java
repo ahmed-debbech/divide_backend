@@ -1,11 +1,11 @@
 package com.debbech.divide.web;
 
-import com.debbech.divide.security.JwtService;
 import com.debbech.divide.services.interfaces.IAuthService;
 import com.debbech.divide.web.models.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,15 +22,15 @@ public class AuthController {
     private IAuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResp> login(@RequestBody LoginReq req){
+    public ResponseEntity<GeneralMessage> login(@RequestBody LoginReq req){
         log.info("{} ", req.getUid() + " is trying to login");
         try {
             authService.startAuthentication(req.getUid(), req.getEmail());
-            LoginResp lr = new LoginResp(true, "");
+            GeneralMessage lr = new GeneralMessage( "", true);
             return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
-            LoginResp lr = new LoginResp(false, e.getMessage());
-            return ResponseEntity.ok().body(lr);
+            GeneralMessage lr = new GeneralMessage( e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(lr);
         }
     }
     @PostMapping("/login/valid")
@@ -42,20 +42,20 @@ public class AuthController {
             return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
             ValidateLoginResp lr = new ValidateLoginResp("", false, e.getMessage());
-            return ResponseEntity.ok().body(lr);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(lr);
         }
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResp> firstTime(@RequestBody SignupReq req){
+    public ResponseEntity<GeneralMessage> firstTime(@RequestBody SignupReq req){
         log.info("a new user is signing up with email {} with name {} ", req.getEmail(), req.getFullName());
         try {
             authService.firstTimeSignup(req.getEmail(), req.getFullName());
-            SignUpResp lr = new SignUpResp(true, "");
+            GeneralMessage lr = new GeneralMessage("", true);
             return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
-            SignUpResp lr = new SignUpResp(false, e.getMessage());
-            return ResponseEntity.ok().body(lr);
+            GeneralMessage lr = new GeneralMessage( e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(lr);
         }
     }
 
@@ -68,7 +68,7 @@ public class AuthController {
             return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
             ValidateLoginResp lr = new ValidateLoginResp("",false, e.getMessage());
-            return ResponseEntity.ok().body(lr);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(lr);
         }
     }
 

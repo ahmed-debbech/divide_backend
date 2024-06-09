@@ -140,12 +140,10 @@ public class AuthService implements IAuthService {
         return token;
     }
 
-    @Override
     public boolean isEmailExist(String email) {
         User u = userRepo.findUserByEmail(email).orElse(null);
         return u != null;
     }
-    @Override
     public boolean isUidExist(String uid) {
         User u = userRepo.findUserByUid(uid).orElse(null);
         return u != null;

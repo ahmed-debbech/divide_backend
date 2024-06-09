@@ -9,6 +9,4 @@ public interface IAuthService {
 
     String validateSignup(String email, String code) throws Exception;
 
-    boolean isEmailExist(String email);
-    boolean isUidExist(String email);
 }

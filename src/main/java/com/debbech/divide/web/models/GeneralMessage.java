@@ -1,14 +1,11 @@
 package com.debbech.divide.web.models;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
-@Getter
-@Setter
-public class SignUpResp {
-
-    private boolean ok;
+public class GeneralMessage {
     private String error;
+    private boolean ok;
 }
