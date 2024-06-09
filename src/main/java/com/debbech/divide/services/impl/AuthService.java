@@ -99,6 +99,8 @@ public class AuthService implements IAuthService {
         if(!AllInputSanitizers.isValidEmail(email)) throw new Exception("Incorrect email");
         if(fullName.isEmpty() || fullName.length() > 100) throw new Exception("full name is not acceptable");
 
+        if(isEmailExist(email)) throw new Exception("email is already used");
+
         User u = new User();
         u.setEmail(email);
         u.setUid("");
@@ -108,7 +110,7 @@ public class AuthService implements IAuthService {
         u.setLastOtp(otp);
         userRepo.save(u);
 
-        //send email to new account
+        //TODO send email to new account
     }
 
     @Override
@@ -124,7 +126,11 @@ public class AuthService implements IAuthService {
         if(!lastOtp.equals(code)) throw new Exception("wrong otp");
 
         //create uid
-        String uid = UID.generate();
+        String uid = null;
+        do{
+            uid = UID.generate();
+        }while(isUidExist(uid));
+
         String token = jwtService.createJwt(uid);
 
         userDb.setOtpValidated(true);
@@ -132,5 +138,16 @@ public class AuthService implements IAuthService {
         userRepo.save(userDb);
 
         return token;
+    }
+
+    @Override
+    public boolean isEmailExist(String email) {
+        User u = userRepo.findUserByEmail(email).orElse(null);
+        return u != null;
+    }
+    @Override
+    public boolean isUidExist(String uid) {
+        User u = userRepo.findUserByUid(uid).orElse(null);
+        return u != null;
     }
 }

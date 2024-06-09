@@ -8,4 +8,7 @@ public interface IAuthService {
     void firstTimeSignup(String email, String fullName) throws Exception;
 
     String validateSignup(String email, String code) throws Exception;
+
+    boolean isEmailExist(String email);
+    boolean isUidExist(String email);
 }
