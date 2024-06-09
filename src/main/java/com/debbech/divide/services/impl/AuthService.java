@@ -6,6 +6,7 @@ import com.debbech.divide.security.JwtService;
 import com.debbech.divide.services.interfaces.IAuthService;
 import com.debbech.divide.utils.AllInputSanitizers;
 import com.debbech.divide.utils.OTP;
+import com.debbech.divide.utils.UID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -88,6 +89,46 @@ public class AuthService implements IAuthService {
 
         String token = jwtService.createJwt(uid);
         userDb.setOtpValidated(true);
+        userRepo.save(userDb);
+
+        return token;
+    }
+
+    @Override
+    public void firstTimeSignup(String email, String fullName) throws Exception {
+        if(!AllInputSanitizers.isValidEmail(email)) throw new Exception("Incorrect email");
+        if(fullName.isEmpty() || fullName.length() > 100) throw new Exception("full name is not acceptable");
+
+        User u = new User();
+        u.setEmail(email);
+        u.setUid("");
+        u.setFullName(fullName);
+        u.setOtpValidated(false);
+        String otp = OTP.generate();
+        u.setLastOtp(otp);
+        userRepo.save(u);
+
+        //send email to new account
+    }
+
+    @Override
+    public String validateSignup(String email, String code) throws Exception {
+        if(!AllInputSanitizers.isValidEmail(email)) throw new Exception("Incorrect email");
+
+        User userDb = userRepo.findUserByEmail(email).orElse(null);
+
+        if (userDb == null) throw new Exception("could not find user");
+        if (userDb.isOtpValidated()) throw new Exception("otp code is already validated");
+
+        String lastOtp = userDb.getLastOtp();
+        if(!lastOtp.equals(code)) throw new Exception("wrong otp");
+
+        //create uid
+        String uid = UID.generate();
+        String token = jwtService.createJwt(uid);
+
+        userDb.setOtpValidated(true);
+        userDb.setUid(uid);
         userRepo.save(userDb);
 
         return token;

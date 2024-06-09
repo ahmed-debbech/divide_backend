@@ -49,13 +49,27 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<SignUpResp> firstTime(@RequestBody SignupReq req){
         log.info("a new user is signing up with email {} with name {} ", req.getEmail(), req.getFullName());
-        return ResponseEntity.ok().body(null);
+        try {
+            authService.firstTimeSignup(req.getEmail(), req.getFullName());
+            SignUpResp lr = new SignUpResp(true, "");
+            return ResponseEntity.ok().body(lr);
+        } catch (Exception e) {
+            SignUpResp lr = new SignUpResp(false, e.getMessage());
+            return ResponseEntity.ok().body(lr);
+        }
     }
 
     @PostMapping("/signup/valid")
     public ResponseEntity<ValidateLoginResp> validSignup(@RequestBody SignupOtpReq req){
         log.info("a new user is validating their sign up with email {}", req.getEmail());
-        return ResponseEntity.ok().body(null);
+        try {
+            String token = authService.validateSignup(req.getEmail(), req.getCode());
+            ValidateLoginResp lr = new ValidateLoginResp(token ,true, "");
+            return ResponseEntity.ok().body(lr);
+        } catch (Exception e) {
+            ValidateLoginResp lr = new ValidateLoginResp("",false, e.getMessage());
+            return ResponseEntity.ok().body(lr);
+        }
     }
 
 
