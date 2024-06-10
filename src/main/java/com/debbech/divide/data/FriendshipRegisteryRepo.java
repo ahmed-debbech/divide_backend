@@ -12,10 +12,13 @@ import java.util.Optional;
 @Repository
 public interface FriendshipRegisteryRepo extends JpaRepository<FriendshipRegistry, Long> {
 
-    @Query(value = "SELECT * FROM friendship_registery WHERE ((uid_from = uidf and uid_to = uidt) or" +
-            " (uid_from = uidt and uid_to = uidf)) " +
+    @Query(value = "SELECT * FROM friendship_registery WHERE ((uid_from = :uidf and uid_to = :uidt) or" +
+            " (uid_from = :uidt and uid_to = :uidf)) " +
             "and (is_deleted = false)"
             , nativeQuery = true)
-    Optional<List<FriendshipRegistry>> checkIfFriendshipIsAlreadyMade(@Param("uidf") String uid_from, @Param("uidt") String uid_to);
+    Optional<List<FriendshipRegistry>> checkIfFriendshipIsAlreadyMade(@Param("uidf") Long uid_from, @Param("uidt") Long uid_to);
+
+    @Query(value = "SELECT * FROM friendship_registery WHERE id = :id", nativeQuery = true)
+    Optional<FriendshipRegistry> getByIdLong(@Param("id") Long friendship_id);
 
 }

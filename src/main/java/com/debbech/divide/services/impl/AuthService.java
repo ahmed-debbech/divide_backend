@@ -87,7 +87,7 @@ public class AuthService implements IAuthService {
         String lastOtp = userDb.getLastOtp();
         if(!lastOtp.equals(code)) throw new Exception("wrong otp");
 
-        String token = jwtService.createJwt(uid);
+        String token = jwtService.createJwt(userDb.getUid());
         userDb.setOtpValidated(true);
         userRepo.save(userDb);
 

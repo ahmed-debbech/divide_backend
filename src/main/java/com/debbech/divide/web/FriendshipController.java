@@ -28,4 +28,28 @@ public class FriendshipController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ufsr);
         }
     }
+
+    @PutMapping("/{friendship_id}/cancel")
+    public ResponseEntity<Object> cancelRequest(@PathVariable("friendship_id") Long friendshipId){
+        try {
+            friendshipRegistryService.cancelRequest(friendshipId);
+            GeneralMessage ufsr = new GeneralMessage("", true);
+            return ResponseEntity.ok().body(ufsr);
+        }catch (Exception e){
+            GeneralMessage ufsr = new GeneralMessage(e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ufsr);
+        }
+    }
+
+    @PutMapping("/{friendship_id}/unfriend")
+    public ResponseEntity<Object> unfriendRequest(@PathVariable("friendship_id") Long friendshipId){
+        try {
+            friendshipRegistryService.unfriendRequest(friendshipId);
+            GeneralMessage ufsr = new GeneralMessage("", true);
+            return ResponseEntity.ok().body(ufsr);
+        }catch (Exception e){
+            GeneralMessage ufsr = new GeneralMessage(e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ufsr);
+        }
+    }
 }
