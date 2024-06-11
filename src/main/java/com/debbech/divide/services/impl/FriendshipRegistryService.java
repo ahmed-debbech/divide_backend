@@ -58,6 +58,8 @@ public class FriendshipRegistryService implements IFriendshipRegistryService {
         if(fsr.getUnfriendedOn() != null) throw new Exception("friendship has already been unfriended") ;
         if(fsr.getCanceledOn() != null) throw new Exception("friendship has already been canceled") ;
 
+        if(fsr.getAcceptedOn() != null) throw new Exception("friendship can not get canceled because it is already canceled");
+
         fsr.setCanceledOn(LocalDateTime.now());
         fsr.setDeleted(true);
         friendshipRegisteryRepo.save(fsr);
@@ -72,10 +74,56 @@ public class FriendshipRegistryService implements IFriendshipRegistryService {
         if(fsr.getCanceledOn() != null) throw new Exception("friendship has already been canceled") ;
         if(fsr.getUnfriendedOn() != null) throw new Exception("friendship has already been unfriended") ;
 
+        if(fsr.getAcceptedOn() == null) throw new Exception("friendship can not get be unfriended because it is not accepted");
+
         fsr.setUnfriendedOn(LocalDateTime.now());
         fsr.setDeleted(true);
         friendshipRegisteryRepo.save(fsr);
 
+    }
+
+    @Override
+    public void acceptRequest(Long friendshipId) throws Exception {
+
+        FriendshipRegistry fsr = friendshipRegisteryRepo.getByIdLong(friendshipId).orElse(null);
+        if(fsr == null) throw new Exception("This friendship does not exist");
+
+        if(fsr.getCanceledOn() != null) throw new Exception("friendship has already been canceled") ;
+        if(fsr.getUnfriendedOn() != null) throw new Exception("friendship has already been unfriended") ;
+
+        String auth = AuthService.getLoggedInUser();
+
+        if(!fsr.getTo().getUid().equals(auth)) throw new Exception("You can not accept your own request to this user.");
+
+        fsr.setAcceptedOn(LocalDateTime.now());
+        fsr.setDeleted(false);
+        friendshipRegisteryRepo.save(fsr);
+    }
+
+    @Override
+    public List<FriendshipRegistry> getAllIncommingRequests() throws Exception {
+
+        String uid = AuthService.getLoggedInUser();
+        User uidt = userRepo.findUserByUid(uid).orElse(null);
+        if(uidt== null) throw new Exception("requested user does not exist");
+
+        List<FriendshipRegistry> fsr = friendshipRegisteryRepo.getIncomming(uidt.getId()).orElse(null);
+        if(fsr == null) throw new Exception("error retrieving list");
+
+        return fsr;
+    }
+
+    @Override
+    public List<FriendshipRegistry> getAllFriends() throws Exception {
+
+        String uid = AuthService.getLoggedInUser();
+        User uidt = userRepo.findUserByUid(uid).orElse(null);
+        if(uidt== null) throw new Exception("requested user does not exist");
+
+        List<FriendshipRegistry> fsr = friendshipRegisteryRepo.getFriends(uidt.getId()).orElse(null);
+        if(fsr == null) throw new Exception("error retrieving list");
+
+        return fsr;
     }
 
 }

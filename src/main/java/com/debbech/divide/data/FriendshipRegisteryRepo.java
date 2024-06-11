@@ -21,4 +21,9 @@ public interface FriendshipRegisteryRepo extends JpaRepository<FriendshipRegistr
     @Query(value = "SELECT * FROM friendship_registery WHERE id = :id", nativeQuery = true)
     Optional<FriendshipRegistry> getByIdLong(@Param("id") Long friendship_id);
 
+    @Query(value = "SELECT * FROM friendship_registery WHERE accepted_on is null and is_deleted = false and uid_to = :uid", nativeQuery = true)
+    Optional<List<FriendshipRegistry>> getIncomming(@Param("uid") Long id);
+
+    @Query(value = "SELECT * FROM friendship_registery WHERE accepted_on is not null and is_deleted = false and ((uid_from = :uid) or (uid_to = :uid))", nativeQuery = true)
+    Optional<List<FriendshipRegistry>> getFriends(@Param("uid") Long id);
 }
