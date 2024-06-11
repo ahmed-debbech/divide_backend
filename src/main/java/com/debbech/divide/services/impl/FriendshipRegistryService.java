@@ -58,7 +58,7 @@ public class FriendshipRegistryService implements IFriendshipRegistryService {
         if(fsr.getUnfriendedOn() != null) throw new Exception("friendship has already been unfriended") ;
         if(fsr.getCanceledOn() != null) throw new Exception("friendship has already been canceled") ;
 
-        if(fsr.getAcceptedOn() != null) throw new Exception("friendship can not get canceled because it is already canceled");
+        if(fsr.getAcceptedOn() != null) throw new Exception("friendship can not get canceled because it is already accepted");
 
         fsr.setCanceledOn(LocalDateTime.now());
         fsr.setDeleted(true);
