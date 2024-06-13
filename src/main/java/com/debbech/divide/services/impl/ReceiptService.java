@@ -14,8 +14,15 @@ public class ReceiptService implements IReceiptService {
     private OrderProcessor orderProcessor;
 
     @Override
-    public String startProcessing(String picture) {
-        String id = orderProcessor.launch(picture);
+    public String startProcessing(String picture) throws Exception {
+        String id = orderProcessor.start(picture);
         return id;
     }
+
+    @Override
+    public String finishProcessing(String picture) throws Exception {
+        orderProcessor.execute();
+        return null;
+    }
+
 }

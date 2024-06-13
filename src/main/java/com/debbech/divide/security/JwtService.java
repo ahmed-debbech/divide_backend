@@ -23,7 +23,7 @@ public class JwtService {
         Algorithm algo = Algorithm.HMAC256(secret);
         String accesstoken = JWT.create()
                 .withSubject(uuid)
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1800000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 86400000))
                 .withIssuer("divide_backend")
                 .withClaim("roles", true)
                 .sign(algo);
