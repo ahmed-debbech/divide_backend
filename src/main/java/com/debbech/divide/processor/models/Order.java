@@ -6,5 +6,5 @@ import lombok.Data;
 public class Order {
 
     private String receiptImageFileName;
-
+    private Processing isProcessing;
 }

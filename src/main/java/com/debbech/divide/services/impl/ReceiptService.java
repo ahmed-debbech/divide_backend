@@ -20,9 +20,8 @@ public class ReceiptService implements IReceiptService {
     }
 
     @Override
-    public String finishProcessing(String picture) throws Exception {
-        orderProcessor.execute();
-        return null;
+    public boolean checkProcessing(String id) throws Exception {
+        return orderProcessor.check(id);
     }
 
 }
