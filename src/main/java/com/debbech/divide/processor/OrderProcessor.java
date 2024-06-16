@@ -5,6 +5,7 @@ import com.debbech.divide.processor.models.Order;
 import com.debbech.divide.processor.models.Processing;
 import com.debbech.divide.processor.scanner.IScanner;
 import com.debbech.divide.services.impl.AuthService;
+import com.debbech.divide.services.interfaces.IReceiptService;
 import com.debbech.divide.utils.Base64Parser;
 import com.debbech.divide.utils.SystemCall;
 import lombok.Data;
@@ -31,6 +32,8 @@ public class OrderProcessor {
     private SystemCall systemCall;
     @Autowired
     private IScanner scanner;
+    @Autowired
+    private OrderExporter orderExporter;
 
     public String start(String picture) throws Exception {
         String id = OrderProcessorUtils.generateId();
@@ -50,13 +53,12 @@ public class OrderProcessor {
     public boolean check(String id) throws Exception {
         Order order = liveDb.get(id);
 
-        if(order == null) return true;
-        if(order.getIsProcessing() == Processing.DONE) return true;
+        if(order.getIsProcessing() == Processing.ONGOING) return false;
 
-        return false;
+        return true;
     }
 
-    @Scheduled(cron = "*/10 * * * * *") //every 10 secs
+    @Scheduled(fixedDelay = 5000) // 5 sec in between
     public void executeAll(){
         log.info("started executing all orders");
         List<Map.Entry<String,Order>> list = liveDb.getAll();
@@ -73,12 +75,16 @@ public class OrderProcessor {
                 liveDb.set(list.get(i).getKey(), or);
                 try {
                     JSONObject result = scanner.execute(systemCall.getFullPath(or.getReceiptImageFileName()));
+                    or.setExtractedData(OrderProcessorUtils.convert(result));
                     or.setIsProcessing(Processing.DONE);
+                    or.setFailureReason(null);
                     log.info("setting order {} to DONE", list.get(i).getKey());
                     liveDb.set(list.get(i).getKey(), or);
                 } catch (Exception e) {
                     log.info("error while scanning order {}", list.get(i).getKey());
                     or.setIsProcessing(Processing.FAILED);
+                    or.setFailureReason(e.getMessage());
+                    or.setExtractedData(null);
                     log.info("setting order {} to FAILED", list.get(i).getKey());
                     liveDb.set(list.get(i).getKey(), or);
                 }
@@ -87,7 +93,7 @@ public class OrderProcessor {
         log.info("done executing all orders");
     }
 
-    @Scheduled(cron = "0 * * * * *") //every 1 min
+    @Scheduled(fixedDelay = 1000) //every 1 sec
     public void cleanUp(){
         log.info("cleaning up...");
         List<Map.Entry<String,Order>> list = liveDb.getAll();
@@ -98,7 +104,13 @@ public class OrderProcessor {
 
         for(Map.Entry<String,Order> o : list){
             if(o.getValue().getIsProcessing() == Processing.DONE){
-                log.info("removing {} order from live db", o.getKey());
+                log.info("removing successful {} order from live db", o.getKey());
+                orderExporter.export(o.getKey(), o.getValue());
+                liveDb.delete(o.getKey());
+            }
+            if(o.getValue().getIsProcessing() == Processing.FAILED){
+                log.info("removing failed {} order from live db", o.getKey());
+                orderExporter.export(o.getKey(), o.getValue());
                 liveDb.delete(o.getKey());
             }
         }

@@ -1,0 +1,28 @@
+package com.debbech.divide.entity.receipt;
+
+import com.debbech.divide.entity.enumer.Processing;
+import com.debbech.divide.processor.models.ExtractedData;
+import jakarta.persistence.*;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "receipt")
+public class Receipt {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(length = 5)
+    private String ourReference;
+    @Column(length = 512)
+    private String receiptImageFileName;
+    @Enumerated(EnumType.STRING)
+    private Processing isProcessing;
+    @Column(length = 512)
+    private String failureReason;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "receipt_data_id", referencedColumnName = "id")
+    private ReceiptData receiptData;
+}
