@@ -3,18 +3,20 @@ package com.debbech.divide.services.impl;
 import com.debbech.divide.data.receipt.ReceiptDataRepo;
 import com.debbech.divide.data.receipt.ReceiptItemRepo;
 import com.debbech.divide.data.receipt.ReceiptRepo;
+import com.debbech.divide.entity.User;
 import com.debbech.divide.entity.receipt.Receipt;
-import com.debbech.divide.entity.receipt.ReceiptItem;
 import com.debbech.divide.processor.OrderExporter;
 import com.debbech.divide.processor.OrderProcessor;
 import com.debbech.divide.processor.models.Order;
 import com.debbech.divide.services.interfaces.IReceiptService;
+import com.debbech.divide.services.interfaces.IUserService;
 import com.debbech.divide.utils.ObjectConverters;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -31,10 +33,14 @@ public class ReceiptService implements IReceiptService {
     private ReceiptItemRepo receiptItemRepo;
     @Autowired
     private ReceiptDataRepo receiptDataRepo;
+    @Autowired
+    private IUserService userService;
+
 
     @Override
     public String startProcessing(String picture) throws Exception {
-        String id = orderProcessor.start(picture);
+        String uidInitiator = AuthService.getLoggedInUser();
+        String id = orderProcessor.start(uidInitiator,picture);
         return id;
     }
 
@@ -47,18 +53,17 @@ public class ReceiptService implements IReceiptService {
     @Override
     public void persistToDb() {
         if(orderExporter.exportedOrders.isEmpty()) return;
-        /*for(Map.Entry<String, Order> en: orderExporter.exportedOrders){
-            Receipt r = ObjectConverters.convert(en.getKey(), en.getValue());
-            for(ReceiptItem ri : r.getReceiptData().getLineItems()){
-                receiptItemRepo.save(ri);
-            }
-            receiptDataRepo.save(r.getReceiptData());
-            receiptRepo.save(r);
-        }*/
+
         for(Map.Entry<String, Order> en: orderExporter.exportedOrders) {
             Receipt r = ObjectConverters.convert(en.getKey(), en.getValue());
-            //  receiptDataRepo.save(r.getReceiptData());
-            receiptRepo.save(r);
+            try {
+                User u = userService.searchByUid(r.getInitiator().getUid());
+                r.setInitiator(u);
+                r.setCreatedAt(LocalDateTime.now());
+                receiptRepo.save(r);
+            } catch (Exception e) {
+                return;
+            }
         }
         orderExporter.exportedOrders.clear();
     }

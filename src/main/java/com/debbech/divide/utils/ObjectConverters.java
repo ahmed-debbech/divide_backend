@@ -1,5 +1,6 @@
 package com.debbech.divide.utils;
 
+import com.debbech.divide.entity.User;
 import com.debbech.divide.entity.enumer.Processing;
 import com.debbech.divide.entity.receipt.Receipt;
 import com.debbech.divide.entity.receipt.ReceiptData;
@@ -57,7 +58,16 @@ public class ObjectConverters {
         }
         r.setFailureReason(o.getFailureReason());
         r.setReceiptImageFileName(o.getReceiptImageFileName());
-        r.setReceiptData(convert(o.getExtractedData()));
+
+        if(o.getExtractedData()
+                != null)
+            r.setReceiptData(convert(o.getExtractedData()));
+        else
+            r.setReceiptData(null);
+
+        User u = new User();
+        u.setUid(o.getUidInitiator());
+        r.setInitiator(u);
         return r;
     }
 }

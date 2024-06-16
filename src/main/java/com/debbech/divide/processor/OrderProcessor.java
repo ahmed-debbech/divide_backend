@@ -35,7 +35,7 @@ public class OrderProcessor {
     @Autowired
     private OrderExporter orderExporter;
 
-    public String start(String picture) throws Exception {
+    public String start(String uid, String picture) throws Exception {
         String id = OrderProcessorUtils.generateId();
 
         byte[] img = Base64Parser.base64ToBytes(picture);
@@ -45,6 +45,7 @@ public class OrderProcessor {
         Order order = new Order();
         order.setIsProcessing(Processing.NOT_READY);
         order.setReceiptImageFileName(fileName);
+        order.setUidInitiator(uid);
 
         liveDb.set(id, order);
         return id;

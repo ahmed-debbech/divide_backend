@@ -9,4 +9,5 @@ public class Order {
     private Processing isProcessing;
     private ExtractedData extractedData;
     private String failureReason;
+    private String uidInitiator;
 }
