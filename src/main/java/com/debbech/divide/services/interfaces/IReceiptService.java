@@ -1,5 +1,6 @@
 package com.debbech.divide.services.interfaces;
 
+import com.debbech.divide.entity.receipt.Receipt;
 import com.debbech.divide.processor.models.Order;
 
 public interface IReceiptService {
@@ -7,4 +8,6 @@ public interface IReceiptService {
     boolean checkProcessing(String id) throws Exception;
 
     void persistToDb();
+
+    Receipt getOne(String id) throws Exception;
 }

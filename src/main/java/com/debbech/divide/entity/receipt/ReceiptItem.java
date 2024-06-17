@@ -23,4 +23,5 @@ public class ReceiptItem {
     private Double quantity;
     private Double weight;
     private Double tax;
+
 }

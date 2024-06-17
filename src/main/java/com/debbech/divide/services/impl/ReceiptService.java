@@ -68,4 +68,14 @@ public class ReceiptService implements IReceiptService {
         orderExporter.exportedOrders.clear();
     }
 
+    @Override
+    public Receipt getOne(String id) throws Exception {
+
+        Receipt r = receiptRepo.findByOurReference(id).orElse(null);
+        if (r == null) throw new Exception("can't find receipt");
+
+
+        return r;
+    }
+
 }

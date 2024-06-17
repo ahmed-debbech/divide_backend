@@ -25,6 +25,7 @@ public class ReceiptData {
     @Column(length = 512)
     private String vendorName;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "receipt_data_id")
     private List<ReceiptItem> lineItems;
 }

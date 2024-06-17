@@ -54,6 +54,7 @@ public class OrderProcessor {
     public boolean check(String id) throws Exception {
         Order order = liveDb.get(id);
 
+        if(order == null) return true;
         if(order.getIsProcessing() == Processing.ONGOING) return false;
 
         return true;
