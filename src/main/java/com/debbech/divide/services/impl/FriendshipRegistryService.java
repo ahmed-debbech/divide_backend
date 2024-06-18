@@ -7,6 +7,7 @@ import com.debbech.divide.entity.User;
 import com.debbech.divide.entity.enumer.FriendshipStatus;
 import com.debbech.divide.services.interfaces.IFriendshipRegistryService;
 import com.debbech.divide.utils.AllInputSanitizers;
+import com.debbech.divide.utils.WrapperFriendship;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -128,15 +129,20 @@ public class FriendshipRegistryService implements IFriendshipRegistryService {
     }
 
     @Override
-    public FriendshipStatus seeFriendship(User friend) throws Exception {
+    public WrapperFriendship seeFriendship(User friend) throws Exception {
         String uid = AuthService.getLoggedInUser();
         User you_user = userRepo.findUserByUid(uid).orElse(null);
         if(you_user == null) throw new Exception("Something went wrong.");
 
         FriendshipRegistry fr = friendshipRegisteryRepo.getRelationshipBetween(you_user.getId(), friend.getId()).orElse(null);
-        if(fr == null) return FriendshipStatus.NOT_FRIENDS;
-        if(fr.getAcceptedOn() == null) return FriendshipStatus.PENDING;
-        return FriendshipStatus.FRIENDS;
+        if(fr == null) return new WrapperFriendship(0L, FriendshipStatus.NOT_FRIENDS);
+        if(fr.getAcceptedOn() == null && fr.getFrom().getUid().equals(you_user.getUid())) {
+            return new WrapperFriendship(fr.getId(), FriendshipStatus.CANCELABLE);
+        }
+        if(fr.getAcceptedOn() == null && fr.getTo().getUid().equals(you_user.getUid())) {
+            return new WrapperFriendship(fr.getId(), FriendshipStatus.ACCEPTABLE);
+        }
+        return new WrapperFriendship(fr.getId(), FriendshipStatus.FRIENDS);
     }
 
 }

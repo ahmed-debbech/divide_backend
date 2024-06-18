@@ -3,6 +3,7 @@ package com.debbech.divide.services.interfaces;
 import com.debbech.divide.entity.FriendshipRegistry;
 import com.debbech.divide.entity.User;
 import com.debbech.divide.entity.enumer.FriendshipStatus;
+import com.debbech.divide.utils.WrapperFriendship;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public interface IFriendshipRegistryService {
 
     List<FriendshipRegistry> getAllFriends() throws Exception;
 
-    FriendshipStatus seeFriendship(User friend) throws Exception;
+    WrapperFriendship seeFriendship(User friend) throws Exception;
 }

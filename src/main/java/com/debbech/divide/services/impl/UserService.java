@@ -7,6 +7,7 @@ import com.debbech.divide.entity.enumer.FriendshipStatus;
 import com.debbech.divide.services.interfaces.IFriendshipRegistryService;
 import com.debbech.divide.services.interfaces.IUserService;
 import com.debbech.divide.utils.AllInputSanitizers;
+import com.debbech.divide.utils.WrapperFriendship;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,11 +52,12 @@ public class UserService implements IUserService {
         User u = this.searchByUid(uid);
         if(u == null) return null;
 
-        FriendshipStatus fs = friendshipRegistryService.seeFriendship(u);
+        WrapperFriendship fs = friendshipRegistryService.seeFriendship(u);
         UserWithFriendship us = new UserWithFriendship();
         us.setUid(uid);
         us.setFullName(u.getFullName());
-        us.setFriendshipStatus(fs);
+        us.setFriendshipStatus(fs.getStatus());
+        us.setFriendshipId(fs.getId());
         return us;
     }
 }

@@ -9,5 +9,5 @@ public class UserWithFriendship {
     private String fullName;
 
     private FriendshipStatus friendshipStatus;
-
+    private Long friendshipId;
 }
