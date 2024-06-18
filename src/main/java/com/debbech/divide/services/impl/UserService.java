@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class UserService implements IUserService {
@@ -22,5 +24,20 @@ public class UserService implements IUserService {
 
         User u = userRepo.findUserByUid(uid).orElse(null);
         return u;
+    }
+
+    @Override
+    public User getCurrentProfile() throws Exception {
+        User u = null;
+        String uid = AuthService.getLoggedInUser();
+        u = userRepo.findUserByUid(uid).orElse(null);
+        if(u == null) throw new Exception("can not get your current profile because your uid does not exist");
+
+        return u;
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepo.findAll();
     }
 }

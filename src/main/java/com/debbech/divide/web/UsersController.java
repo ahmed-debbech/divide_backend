@@ -4,6 +4,7 @@ import com.debbech.divide.entity.User;
 import com.debbech.divide.services.impl.AuthService;
 import com.debbech.divide.services.interfaces.IUserService;
 import com.debbech.divide.web.models.GeneralMessage;
+import com.debbech.divide.web.models.GetCurrProfileResp;
 import com.debbech.divide.web.models.UserFromSearchResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,27 @@ public class UsersController {
         try {
             User u = userService.searchByUid(uid);
             if (u == null){
-                GeneralMessage ufsr = new GeneralMessage("User with id "+uid+ " do not exist.", false);
+                GeneralMessage ufsr = new GeneralMessage("User with id "+uid+ " does not exist.", false);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ufsr);
             }
             UserFromSearchResp ufsr = new UserFromSearchResp(u.getFullName());
             return ResponseEntity.ok().body(ufsr);
+        }catch (Exception e){
+            GeneralMessage ufsr = new GeneralMessage(e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ufsr);
+        }
+    }
+
+    @GetMapping("/get_profile")
+    public ResponseEntity<Object> multi(){
+        try {
+            User u = userService.getCurrentProfile();
+            GetCurrProfileResp gcpr = new GetCurrProfileResp();
+            gcpr.setEmail(u.getEmail());
+            gcpr.setUid(u.getUid());
+            gcpr.setFullName(u.getFullName());
+
+            return ResponseEntity.ok().body(gcpr);
         }catch (Exception e){
             GeneralMessage ufsr = new GeneralMessage(e.getMessage(), false);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ufsr);
