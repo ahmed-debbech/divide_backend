@@ -4,6 +4,7 @@ import com.debbech.divide.data.FriendshipRegisteryRepo;
 import com.debbech.divide.data.UserRepo;
 import com.debbech.divide.entity.FriendshipRegistry;
 import com.debbech.divide.entity.User;
+import com.debbech.divide.entity.enumer.FriendshipStatus;
 import com.debbech.divide.services.interfaces.IFriendshipRegistryService;
 import com.debbech.divide.utils.AllInputSanitizers;
 import lombok.extern.slf4j.Slf4j;
@@ -124,6 +125,18 @@ public class FriendshipRegistryService implements IFriendshipRegistryService {
         if(fsr == null) throw new Exception("error retrieving list");
 
         return fsr;
+    }
+
+    @Override
+    public FriendshipStatus seeFriendship(User friend) throws Exception {
+        String uid = AuthService.getLoggedInUser();
+        User you_user = userRepo.findUserByUid(uid).orElse(null);
+        if(you_user == null) throw new Exception("Something went wrong.");
+
+        FriendshipRegistry fr = friendshipRegisteryRepo.getRelationshipBetween(you_user.getId(), friend.getId()).orElse(null);
+        if(fr == null) return FriendshipStatus.NOT_FRIENDS;
+        if(fr.getAcceptedOn() == null) return FriendshipStatus.PENDING;
+        return FriendshipStatus.FRIENDS;
     }
 
 }

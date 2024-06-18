@@ -103,7 +103,13 @@ public class AuthService implements IAuthService {
 
         User u = new User();
         u.setEmail(email);
-        u.setUid("");
+        //create uid
+        String uid = null;
+        do{
+            uid = UID.generate();
+        }while(isUidExist(uid));
+
+        u.setUid(uid);
         u.setFullName(fullName);
         u.setOtpValidated(false);
         String otp = OTP.generate();
@@ -125,16 +131,10 @@ public class AuthService implements IAuthService {
         String lastOtp = userDb.getLastOtp();
         if(!lastOtp.equals(code)) throw new Exception("wrong otp");
 
-        //create uid
-        String uid = null;
-        do{
-            uid = UID.generate();
-        }while(isUidExist(uid));
 
-        String token = jwtService.createJwt(uid);
+        String token = jwtService.createJwt(userDb.getUid());
 
         userDb.setOtpValidated(true);
-        userDb.setUid(uid);
         userRepo.save(userDb);
 
         return token;

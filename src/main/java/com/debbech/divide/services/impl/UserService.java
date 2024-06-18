@@ -2,6 +2,9 @@ package com.debbech.divide.services.impl;
 
 import com.debbech.divide.data.UserRepo;
 import com.debbech.divide.entity.User;
+import com.debbech.divide.entity.UserWithFriendship;
+import com.debbech.divide.entity.enumer.FriendshipStatus;
+import com.debbech.divide.services.interfaces.IFriendshipRegistryService;
 import com.debbech.divide.services.interfaces.IUserService;
 import com.debbech.divide.utils.AllInputSanitizers;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +19,8 @@ public class UserService implements IUserService {
 
     @Autowired
     private UserRepo userRepo;
+    @Autowired
+    private IFriendshipRegistryService friendshipRegistryService;
 
     @Override
     public User searchByUid(String uid) throws Exception {
@@ -39,5 +44,18 @@ public class UserService implements IUserService {
     @Override
     public List<User> getAll() {
         return userRepo.findAll();
+    }
+
+    @Override
+    public UserWithFriendship searchByUidWithFriendship(String uid) throws Exception {
+        User u = this.searchByUid(uid);
+        if(u == null) return null;
+
+        FriendshipStatus fs = friendshipRegistryService.seeFriendship(u);
+        UserWithFriendship us = new UserWithFriendship();
+        us.setUid(uid);
+        us.setFullName(u.getFullName());
+        us.setFriendshipStatus(fs);
+        return us;
     }
 }
