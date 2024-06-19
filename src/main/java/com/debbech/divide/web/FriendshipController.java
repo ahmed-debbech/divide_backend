@@ -1,9 +1,12 @@
 package com.debbech.divide.web;
 
 import com.debbech.divide.entity.FriendshipRegistry;
+import com.debbech.divide.entity.User;
+import com.debbech.divide.services.impl.AuthService;
 import com.debbech.divide.services.interfaces.IFriendshipRegistryService;
 import com.debbech.divide.web.models.FriendshipRegistryDto;
 import com.debbech.divide.web.models.GeneralMessage;
+import com.debbech.divide.web.models.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +22,28 @@ public class FriendshipController {
     @Autowired
     private IFriendshipRegistryService friendshipRegistryService;
 
+    private UserDto getOppositeUser(User user1, User user2){
+        String uid = AuthService.getLoggedInUser();
+        if(user1.getUid().equals(uid)){
+            return new UserDto(user2.getUid(), user2.getFullName());
+        }
+        if(user2.getUid().equals(uid)){
+            return new UserDto(user1.getUid(), user1.getFullName());
+        }
+        return null;
+    }
 
     @GetMapping("/incomming")
     public ResponseEntity<Object> getRequest(){
+
         try {
             List<FriendshipRegistry> res = friendshipRegistryService.getAllIncommingRequests();
             List<FriendshipRegistryDto> dtos = new ArrayList<>();
             for(int i = 0; i<=res.size()-1; i++){
                 dtos.add(new FriendshipRegistryDto(res.get(i).getId(),
-                        res.get(i).getFrom().getUid(),
-                        res.get(i).getTo().getUid(),
+                        new UserDto(res.get(i).getFrom().getUid(), res.get(i).getFrom().getFullName()),
+                        new UserDto(res.get(i).getTo().getUid(), res.get(i).getTo().getFullName()),
+                        getOppositeUser(res.get(i).getTo(), res.get(i).getFrom()),
                         res.get(i).getMadeOn(),
                         res.get(i).getAcceptedOn(),
                         res.get(i).getUnfriendedOn(),
@@ -49,8 +64,9 @@ public class FriendshipController {
             List<FriendshipRegistryDto> dtos = new ArrayList<>();
             for(int i = 0; i<=res.size()-1; i++){
                 dtos.add(new FriendshipRegistryDto(res.get(i).getId(),
-                        res.get(i).getFrom().getUid(),
-                        res.get(i).getTo().getUid(),
+                        new UserDto(res.get(i).getFrom().getUid(), res.get(i).getFrom().getFullName()),
+                        new UserDto(res.get(i).getTo().getUid(), res.get(i).getTo().getFullName()),
+                        getOppositeUser(res.get(i).getTo(), res.get(i).getFrom()),
                         res.get(i).getMadeOn(),
                         res.get(i).getAcceptedOn(),
                         res.get(i).getUnfriendedOn(),

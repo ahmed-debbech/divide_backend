@@ -11,8 +11,10 @@ public class FriendshipRegistryDto {
 
     private Long id;
 
-    private String uid_from;
-    private String uid_to;
+    private UserDto from;
+    private UserDto to;
+
+    private UserDto opposite;
 
     private LocalDateTime madeOn;
     private LocalDateTime acceptedOn;
