@@ -19,6 +19,7 @@ public class ReceiptController {
 
     @PostMapping("/scan")
     public ResponseEntity<Object> scan(@RequestBody ScanReq req){
+        System.err.println(req.getUploadedPic());
         try {
             String processingAuthCode = receiptService.startProcessing(req.getUploadedPic());
             ScanResp sr = new ScanResp(processingAuthCode);
