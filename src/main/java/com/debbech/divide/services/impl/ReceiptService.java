@@ -73,7 +73,8 @@ public class ReceiptService implements IReceiptService {
 
         Receipt r = receiptRepo.findByOurReference(id).orElse(null);
         if (r == null) throw new Exception("can't find receipt");
-
+        User you = userService.searchByUid(AuthService.getLoggedInUser());
+        if(!r.getInitiator().getUid().equals(you.getUid())) throw new Exception("not your receipt");
 
         return r;
     }
