@@ -55,9 +55,10 @@ public class OrderProcessor {
         Order order = liveDb.get(id);
 
         if(order == null) return true;
-        if(order.getIsProcessing() == Processing.ONGOING) return false;
+        if(order.getIsProcessing() == Processing.DONE) return true;
+        if(order.getIsProcessing() == Processing.FAILED) return true;
 
-        return true;
+        return false;
     }
 
     @Scheduled(fixedDelay = 5000) // 5 sec in between
