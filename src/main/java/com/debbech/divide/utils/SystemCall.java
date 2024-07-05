@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class SystemCall {
@@ -24,5 +26,14 @@ public class SystemCall {
     public String getFullPath(String name){
         String full = upload_path+name;
         return full;
+    }
+    public byte[] getFile(String name) throws Exception{
+        byte[] fileContent;
+        try {
+            fileContent = Files.readAllBytes(Paths.get(getFullPath(name)));
+        }catch (Exception e){
+            throw new Exception("could not find image to create thumbnail for");
+        }
+        return fileContent;
     }
 }

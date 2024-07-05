@@ -31,9 +31,9 @@ public class OrderProcessorUtils {
 
         return sb.toString();
     }
-    static String generateFileName(){
+    static String generateFileName(String orderId){
         String uid = AuthService.getLoggedInUser();
-        return uid + LocalDateTime.now();
+        return uid + "-" + orderId;
     }
 
     public static ExtractedData convert(JSONObject object) throws Exception {

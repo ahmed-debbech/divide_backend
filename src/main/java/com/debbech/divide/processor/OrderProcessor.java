@@ -39,7 +39,7 @@ public class OrderProcessor {
         String id = OrderProcessorUtils.generateId();
 
         byte[] img = Base64Parser.base64ToBytes(picture);
-        String fileName = OrderProcessorUtils.generateFileName();
+        String fileName = OrderProcessorUtils.generateFileName(id);
         systemCall.createFile(fileName, img);
 
         Order order = new Order();

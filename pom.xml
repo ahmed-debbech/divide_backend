@@ -37,6 +37,11 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>4.2</version>
+		</dependency>
+		<dependency>
 			<groupId>com.veryfi</groupId>
 			<artifactId>veryfi-java</artifactId>
 			<version>1.0.10</version>

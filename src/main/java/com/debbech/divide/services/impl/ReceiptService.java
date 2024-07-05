@@ -10,7 +10,10 @@ import com.debbech.divide.processor.OrderProcessor;
 import com.debbech.divide.processor.models.Order;
 import com.debbech.divide.services.interfaces.IReceiptService;
 import com.debbech.divide.services.interfaces.IUserService;
+import com.debbech.divide.utils.Base64Parser;
+import com.debbech.divide.utils.ImageProcessor;
 import com.debbech.divide.utils.ObjectConverters;
+import com.debbech.divide.utils.SystemCall;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,7 +38,8 @@ public class ReceiptService implements IReceiptService {
     private ReceiptDataRepo receiptDataRepo;
     @Autowired
     private IUserService userService;
-
+    @Autowired
+    private SystemCall systemCall;
 
     @Override
     public String startProcessing(String picture) throws Exception {
@@ -76,6 +80,7 @@ public class ReceiptService implements IReceiptService {
         User you = userService.searchByUid(AuthService.getLoggedInUser());
         if(!r.getInitiator().getUid().equals(you.getUid())) throw new Exception("not your receipt");
 
+        r.getReceiptData().setThumbnailBytes(Base64Parser.bytesToBase64(ImageProcessor.getThumbnail(systemCall.getFile(you.getUid()+"-"+id))));
         return r;
     }
 

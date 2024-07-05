@@ -17,6 +17,7 @@ public class ReceiptData {
     private String reference_number;
     @Column(length = 512)
     private String imgTumbUrl;
+    private String thumbnailBytes;
     @Column(length = 512)
     private String deliveryDate;
     private Double discount;

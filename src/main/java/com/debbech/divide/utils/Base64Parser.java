@@ -1,5 +1,6 @@
 package com.debbech.divide.utils;
 import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 public class Base64Parser {
     public static byte[] base64ToBytes(String base64) throws Exception {
@@ -20,5 +21,8 @@ public class Base64Parser {
             }
         }
         return data;
+    }
+    public static String bytesToBase64(byte[] b){
+        return Base64.getEncoder().encodeToString(b);
     }
 }
