@@ -4,6 +4,7 @@ import com.debbech.divide.data.receipt.ReceiptDataRepo;
 import com.debbech.divide.data.receipt.ReceiptItemRepo;
 import com.debbech.divide.data.receipt.ReceiptRepo;
 import com.debbech.divide.entity.User;
+import com.debbech.divide.entity.enumer.Processing;
 import com.debbech.divide.entity.receipt.Receipt;
 import com.debbech.divide.processor.OrderExporter;
 import com.debbech.divide.processor.OrderProcessor;
@@ -80,7 +81,13 @@ public class ReceiptService implements IReceiptService {
         User you = userService.searchByUid(AuthService.getLoggedInUser());
         if(!r.getInitiator().getUid().equals(you.getUid())) throw new Exception("not your receipt");
 
-        r.getReceiptData().setThumbnailBytes(Base64Parser.bytesToBase64(ImageProcessor.getThumbnail(systemCall.getFile(you.getUid()+"-"+id))));
+        if(r.getIsProcessing().equals(Processing.FAILED)) return r;
+
+        try {
+            r.getReceiptData().setThumbnailBytes(Base64Parser.bytesToBase64(ImageProcessor.getThumbnail(systemCall.getFile(you.getUid() + "-" + id))));
+        }catch (Exception e){
+            r.getReceiptData().setThumbnailBytes(null);
+        }
         return r;
     }
 

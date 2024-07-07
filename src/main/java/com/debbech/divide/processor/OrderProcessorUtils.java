@@ -36,6 +36,17 @@ public class OrderProcessorUtils {
         return uid + "-" + orderId;
     }
 
+    public static List<ExtractedItem> splitOneItem(ExtractedItem extractedItem){
+        List<ExtractedItem> extractedItems = new ArrayList<>();
+        for(int i=0; i<=extractedItem.getQuantity()-1; i++){
+            ExtractedItem e = new ExtractedItem(extractedItem);
+            e.setQuantity(1.0);
+            e.setTotal(extractedItem.getTotal()/extractedItem.getQuantity());
+            extractedItems.add(e);
+        }
+        return extractedItems;
+    }
+
     public static ExtractedData convert(JSONObject object) throws Exception {
         if(!object.get("document_type").equals("receipt") || (object.getJSONArray("line_items") == null))
             throw new Exception("the uploaded picture does not look like a receipt");
@@ -82,7 +93,7 @@ public class OrderProcessorUtils {
             ei.setText(jarray.getJSONObject(i).isNull("text") ? null
                     : jarray.getJSONObject(i).get("text").toString());
 
-            ei.setQuantity(jarray.getJSONObject(i).isNull("quantity") ? null
+            ei.setQuantity(jarray.getJSONObject(i).isNull("quantity") ? 1
                     : jarray.getJSONObject(i).getDouble("quantity"));
 
             ei.setWeight(jarray.getJSONObject(i).isNull("weight") ? null
@@ -91,7 +102,12 @@ public class OrderProcessorUtils {
             ei.setTax(jarray.getJSONObject(i).isNull("tax") ? null
                     : jarray.getJSONObject(i).getDouble("tax"));
 
-            extractedItems.add(ei);
+            if(ei.getQuantity() == 1) {
+                extractedItems.add(ei);
+            }
+            if(ei.getQuantity() > 1) {
+                extractedItems.addAll(splitOneItem(ei));
+            }
         }
         ed.setLineItems(extractedItems);
 
