@@ -1,6 +1,7 @@
 package com.debbech.divide.entity.receipt;
 
 import com.debbech.divide.entity.User;
+import com.debbech.divide.entity.division.Division;
 import com.debbech.divide.entity.enumer.Processing;
 import com.debbech.divide.processor.models.ExtractedData;
 import jakarta.persistence.*;
@@ -33,4 +34,8 @@ public class Receipt {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "receipt_data_id", referencedColumnName = "id")
     private ReceiptData receiptData;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "division_id", referencedColumnName = "id")
+    private Division division;
 }

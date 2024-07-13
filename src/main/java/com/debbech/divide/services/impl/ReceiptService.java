@@ -3,7 +3,9 @@ package com.debbech.divide.services.impl;
 import com.debbech.divide.data.receipt.ReceiptDataRepo;
 import com.debbech.divide.data.receipt.ReceiptItemRepo;
 import com.debbech.divide.data.receipt.ReceiptRepo;
+import com.debbech.divide.divisor.DivisionStepsExecutor;
 import com.debbech.divide.entity.User;
+import com.debbech.divide.entity.division.Division;
 import com.debbech.divide.entity.enumer.Processing;
 import com.debbech.divide.entity.receipt.Receipt;
 import com.debbech.divide.processor.OrderExporter;
@@ -41,6 +43,9 @@ public class ReceiptService implements IReceiptService {
     private IUserService userService;
     @Autowired
     private SystemCall systemCall;
+
+    @Autowired
+    private DivisionStepsExecutor divisionStepsExecutor;
 
     @Override
     public String startProcessing(String picture) throws Exception {
@@ -89,6 +94,11 @@ public class ReceiptService implements IReceiptService {
             r.getReceiptData().setThumbnailBytes(null);
         }
         return r;
+    }
+
+    @Override
+    public void divide(Long id, Division division) throws Exception {
+        divisionStepsExecutor.executeStepsInOrder(id, division);
     }
 
 }

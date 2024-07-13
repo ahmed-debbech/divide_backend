@@ -1,5 +1,6 @@
 package com.debbech.divide.web;
 
+import com.debbech.divide.entity.division.Division;
 import com.debbech.divide.entity.receipt.Receipt;
 import com.debbech.divide.services.interfaces.IReceiptService;
 import com.debbech.divide.web.models.*;
@@ -54,6 +55,18 @@ public class ReceiptController {
             rd.setOurReference(result.getOurReference());
             rd.setCreatedAt(result.getCreatedAt());
             return ResponseEntity.ok().body(rd);
+        } catch (Exception e) {
+            GeneralMessage lr = new GeneralMessage( e.getMessage(), false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(lr);
+        }
+    }
+
+    @PostMapping("/{receipt_id}/division")
+    public ResponseEntity<Object> divide(@PathVariable("receipt_id") Long id, @RequestBody Division division){
+        try {
+            receiptService.divide(id, division);
+            GeneralMessage lr = new GeneralMessage("", true);
+            return ResponseEntity.ok().body(lr);
         } catch (Exception e) {
             GeneralMessage lr = new GeneralMessage( e.getMessage(), false);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(lr);
