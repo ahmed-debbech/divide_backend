@@ -11,5 +11,7 @@ public interface IReceiptService {
 
     Receipt getOne(String id) throws Exception;
 
+    Receipt getOneById(Long id) throws Exception;
+
     void divide(Long id, Division division) throws Exception;
 }

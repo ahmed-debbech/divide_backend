@@ -13,4 +13,6 @@ public interface IUserService {
     List<User> getAll();
 
     UserWithFriendship searchByUidWithFriendship(String uid) throws Exception;
+
+    User findById(Long id) throws Exception;
 }

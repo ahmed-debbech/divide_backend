@@ -97,6 +97,7 @@ public class FriendshipRegistryService implements IFriendshipRegistryService {
 
         if(!fsr.getTo().getUid().equals(auth)) throw new Exception("You can not accept your own request to this user.");
 
+        if(fsr.getAcceptedOn() != null) throw new Exception("YOu have already accepted this request.");
         fsr.setAcceptedOn(LocalDateTime.now());
         fsr.setDeleted(false);
         friendshipRegisteryRepo.save(fsr);

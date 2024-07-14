@@ -44,7 +44,6 @@ public class ReceiptService implements IReceiptService {
     @Autowired
     private SystemCall systemCall;
 
-    @Autowired
     private DivisionStepsExecutor divisionStepsExecutor;
 
     @Override
@@ -97,7 +96,17 @@ public class ReceiptService implements IReceiptService {
     }
 
     @Override
+    public Receipt getOneById(Long id) throws Exception {
+
+        Receipt r = receiptRepo.findById(id).orElse(null);
+        if (r == null) throw new Exception("can't find receipt");
+
+        return r;
+    }
+
+    @Override
     public void divide(Long id, Division division) throws Exception {
+        divisionStepsExecutor = new DivisionStepsExecutor();
         divisionStepsExecutor.executeStepsInOrder(id, division);
     }
 

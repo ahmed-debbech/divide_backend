@@ -60,4 +60,11 @@ public class UserService implements IUserService {
         us.setFriendshipId(fs.getId());
         return us;
     }
+
+    @Override
+    public User findById(Long id) throws Exception {
+        User u = this.userRepo.findById(id).orElse(null);
+        if(u == null) throw new Exception("user is not found");
+        return u;
+    }
 }

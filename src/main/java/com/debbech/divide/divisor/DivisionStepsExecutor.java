@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 public class DivisionStepsExecutor {
 
     private List<IDivisionStep> steps;
@@ -15,6 +14,7 @@ public class DivisionStepsExecutor {
     public DivisionStepsExecutor(){
         steps = new ArrayList<>();
         steps.add(new InputValidationStep());
+        steps.add(new ObjectExistanceCheckerStep());
         steps.add(new CalculationValidationStep());
         steps.add(new SavingStep());
         steps.add(new UpdateForeignReceiptsStep());
