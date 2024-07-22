@@ -5,7 +5,8 @@ import com.debbech.divide.entity.division.Division;
 import com.debbech.divide.entity.division.Participant;
 import org.springframework.stereotype.Service;
 
-@Service
+//a class that is a step that validates if objects contain valid data like if every item has at least one participant
+// and if all ids are not negative etc..
 public class InputValidationStep implements IDivisionStep {
 
     @Override

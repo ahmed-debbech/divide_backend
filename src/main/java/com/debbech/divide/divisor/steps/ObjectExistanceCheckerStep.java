@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
+//this class is a step that validates if all object ids are mapped correctly into database
+//also checking that they relate to each other (e.g: each participant should be a friend of the initiator)
 public class ObjectExistanceCheckerStep implements IDivisionStep{
 
     private IReceiptService receiptService;
