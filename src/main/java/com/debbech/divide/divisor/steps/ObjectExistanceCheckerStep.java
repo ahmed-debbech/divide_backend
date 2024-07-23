@@ -83,7 +83,7 @@ public class ObjectExistanceCheckerStep implements IDivisionStep{
                 if(p.getRegistredUser() != null){
                     User u = this.userService.findById(p.getRegistredUser().getId());
                     String uid = AuthService.getLoggedInUser();
-                    if(uid.equals(u.getUid())) break;
+                    if(uid.equals(u.getUid())) continue;
                     WrapperFriendship wf = this.friendshipRegistryService.seeFriendship(u);
                     if(!wf.getStatus().equals(FriendshipStatus.FRIENDS))
                         throw new Exception("this participant is not a friend with the initiator");

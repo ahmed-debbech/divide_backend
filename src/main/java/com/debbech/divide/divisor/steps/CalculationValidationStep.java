@@ -31,14 +31,24 @@ public class CalculationValidationStep implements IDivisionStep {
             // check if sum of all participants amount is equal to receipt item
 
         //check if all participant amounts == the receipt total
+        List<Double> amounts = new ArrayList<>();
+        List<Double> finalAmounts = new ArrayList<>();
 
         for(ReceiptItem ri : r.getReceiptData().getLineItems()){
             for(DivItem di : division.getDivisionItems()){
                 if(ri.getId().equals(di.getReceiptItem().getId())){
-                    getAllAmountsOfDistinctParticiapnts(di.getParticipantsList());
+                    amounts = getAllAmountsOfDistinctParticiapnts(di.getParticipantsList());
+                    Double allAmountsOfParticipants = amounts.stream().mapToDouble(f -> f).sum();
+                    if(!allAmountsOfParticipants.equals(ri.getTotal())) throw new Exception("division total for a receipt item " +ri.getId()+ " is bigger than its total");
+                    finalAmounts.add(allAmountsOfParticipants);
                 }
             }
         }
+        Double fAmount = finalAmounts.stream().mapToDouble(f -> f).sum();
+        Double gAmount = r.getReceiptData().getLineItems().stream().mapToDouble(f -> f.getTotal()).sum();
+
+        if(!fAmount.equals(gAmount)) throw new Exception("sum of division and receipt items are not equal");
+
     }
     private List<Double> getAllAmountsOfDistinctParticiapnts(List<Participant> participantsInOneItem) throws Exception {
         List<Double> amounts = new ArrayList<>(participantsInOneItem.size());
