@@ -12,6 +12,7 @@ import jakarta.servlet.http.Part;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 //the class that does all the calculation validations of a division for a certain receipt
@@ -51,22 +52,20 @@ public class CalculationValidationStep implements IDivisionStep {
 
     }
     private List<Double> getAllAmountsOfDistinctParticiapnts(List<Participant> participantsInOneItem) throws Exception {
-        List<Double> amounts = new ArrayList<>(participantsInOneItem.size());
+        HashMap<String, Double> distinctParticipants = new HashMap<>();
+
+        //initialization...
+        for (int i = 0; i <= participantsInOneItem.size()-1; i++) {
+            distinctParticipants.put(getParticipantId(participantsInOneItem.get(i)), (double) 0 );
+        }
+
 
         for(int i =0; i<=participantsInOneItem.size()-1; i++){
             String id = getParticipantId(participantsInOneItem.get(i));
-            amounts.add(i, participantsInOneItem.get(i).getAmount());
-
-            for(int j =0; j<=participantsInOneItem.size()-1; j++){
-                if(i != j){
-                    String id1 = getParticipantId(participantsInOneItem.get(j));
-                    if(id.equals(id1)){
-                        amounts.add(i, amounts.get(i) + participantsInOneItem.get(j).getAmount());
-                    }
-                }
-            }
+            Double d = distinctParticipants.get(id);
+            distinctParticipants.put(id, d + participantsInOneItem.get(i).getAmount());
         }
-        return amounts;
+        return new ArrayList<>(distinctParticipants.values());
     }
     private String getParticipantId(Participant p) throws Exception{
         if(p.getRegistredUser() == null) return p.getNonExistingUserName();
