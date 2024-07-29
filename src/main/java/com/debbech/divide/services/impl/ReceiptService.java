@@ -1,7 +1,6 @@
 package com.debbech.divide.services.impl;
 
-import com.debbech.divide.data.receipt.ReceiptDataRepo;
-import com.debbech.divide.data.receipt.ReceiptItemRepo;
+
 import com.debbech.divide.data.receipt.ReceiptRepo;
 import com.debbech.divide.divisor.DivisionStepsExecutor;
 import com.debbech.divide.entity.User;
@@ -35,10 +34,6 @@ public class ReceiptService implements IReceiptService {
     private OrderExporter orderExporter;
     @Autowired
     private ReceiptRepo receiptRepo;
-    @Autowired
-    private ReceiptItemRepo receiptItemRepo;
-    @Autowired
-    private ReceiptDataRepo receiptDataRepo;
     @Autowired
     private IUserService userService;
     @Autowired
@@ -108,6 +103,11 @@ public class ReceiptService implements IReceiptService {
     public void divide(Long id, Division division) throws Exception {
         divisionStepsExecutor = new DivisionStepsExecutor();
         divisionStepsExecutor.executeStepsInOrder(id, division);
+    }
+
+    @Override
+    public void save(Receipt r) {
+        receiptRepo.save(r);
     }
 
 }
