@@ -16,11 +16,11 @@ public class DivItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "div_item_id")
     private List<Participant> participantsList;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "receipt_item_id", referencedColumnName = "id")
     private ReceiptItem receiptItem;
 }
