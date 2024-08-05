@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+// the step that is reauired to store the division in the database
 public class SavingStep implements IDivisionStep {
 
     private IReceiptService receiptService;
