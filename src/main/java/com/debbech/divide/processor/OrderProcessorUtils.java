@@ -51,6 +51,7 @@ public class OrderProcessorUtils {
         if(!object.get("document_type").equals("receipt") || (object.getJSONArray("line_items") == null))
             throw new Exception("the uploaded picture does not look like a receipt");
         if(object.isNull("line_items")) throw new Exception("This receipts looks empty!");
+        if(object.isNull("total")) throw new Exception("This receipts does not have total value!");
 
         ExtractedData ed = new ExtractedData();
 
